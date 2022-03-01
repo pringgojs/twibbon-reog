@@ -17,7 +17,7 @@
 
     <style>
       #frame {
-        padding: 50px;
+        /* padding: 50px; */
       }
       #gambarKalian {
         position: absolute;
@@ -37,6 +37,16 @@
         position: relative;
         /* background-image: url("bg.png"); */
       }
+
+      #zoom {
+        height: auto;
+        width: auto;
+        /* display: grid; */
+        /* place-items: center; */
+        /* position: fixed; */
+        /* top: 0; */
+        /* left: 0; */
+      }
     </style>
   </head>
   <body>
@@ -54,7 +64,9 @@
 
     <div id="frame">
       <!-- Ganti gambartwibbon.jpg dengan gambar bingkai Twibbon kalian -->
-      <div id="img-preview"></div>
+      <div id="img-preview">
+        <div id="zoom"></div>
+      </div>
       <img src="bg.png" id="gambarTwibbon" width="300" height="300" />
       <br /><br />
 
@@ -77,9 +89,22 @@
         getImgData();
       });
 
+      //   zoom
+      const zoomElement = document.getElementById("zoom");
+      let zoom = 1;
+      const ZOOM_SPEED = 0.1;
+
+      document.addEventListener("wheel", function (e) {
+        if (e.deltaY > 0) {
+          zoomElement.style.transform = `scale(${(zoom += ZOOM_SPEED)})`;
+        } else {
+          zoomElement.style.transform = `scale(${(zoom -= ZOOM_SPEED)})`;
+        }
+      });
+
       function getImgData() {
         const files = chooseFile.files[0];
-        const imgPreview = document.getElementById("img-preview");
+        const imgPreview = document.getElementById("zoom");
         if (files) {
           const fileReader = new FileReader();
           fileReader.readAsDataURL(files);
@@ -139,6 +164,7 @@
         context.fillStyle = "Red";
         context.fillText(country.value, 150, 300);
         context.getImageData(0, 0, width, height);
+        $("#frame").hide(0);
       }
 
       //   drag
