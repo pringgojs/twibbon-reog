@@ -99,7 +99,7 @@
         <div class="col-md-4">
           <div
             class="card"
-            style="margin-left: 80px; height: auto; position: absolute"
+            style="margin-left: 10px; height: auto; position: absolute"
           >
             <div class="card-body">
               <h5 class="card-title">Twibbon Reog</h5>
@@ -120,6 +120,17 @@
       </div>
     </div>
 
+    <footer>
+      <nav class="navbar fixed-bottom navbar-dark bg-primary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <div class="text-center">
+              DINAS KOMUNIKASI INFORMATIKA DAN STATISTIK KAB. PONOROGO
+            </div></a
+          >
+        </div>
+      </nav>
+    </footer>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
@@ -200,24 +211,16 @@
         canvas.width = width;
         canvas.height = height;
 
-        context.drawImage(
-          gambarKalian,
-          0,
-          0,
-          // getPositionXY("x"),
-          // getPositionXY("y"),
-          width,
-          height
-        );
+        context.drawImage(gambarKalian, 0, 0, width, height);
         context.font = "20pt Calibri";
-        context.fillStyle = "Red";
-        context.fillText(name.value, 150, 270);
+        // context.lineWidth = 3;
+        // context.strokeStyle = "Red";
+        context.strokeText(name.value.toUpperCase(), 150, 270);
         context.getImageData(0, 0, width, height);
 
         context.drawImage(gambarTwibbon, 0, 0, width, height);
-        context.font = "14pt Calibri";
-        context.fillStyle = "Red";
-        context.fillText(country.value, 150, 300);
+        context.font = "14px Calibri";
+        context.strokeText(country.value.toUpperCase(), 150, 290);
         context.getImageData(0, 0, width, height);
         $("#frame").hide(0);
       }
