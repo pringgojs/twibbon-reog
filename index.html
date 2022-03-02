@@ -21,6 +21,9 @@
     <title>REOG ROAD TO ICH UNESCO</title>
 
     <style>
+      #wp-twibbon {
+        position: relative;
+      }
       #frame {
         /* padding: 50px; */
         position: relative;
@@ -42,6 +45,10 @@
         overflow: hidden;
         position: relative;
         /* background-image: url("bg.png"); */
+      }
+
+      #canvas {
+        position: relative;
       }
 
       #zoom {
@@ -104,16 +111,31 @@
             <div class="card-body">
               <h5 class="card-title">Twibbon Reog</h5>
 
-              <div id="frame">
-                <!-- Ganti gambartwibbon.jpg dengan gambar bingkai Twibbon kalian -->
-                <div id="img-preview">
-                  <div id="zoom"></div>
+              <div id="wp-twibbon">
+                <div id="frame">
+                  <!-- Ganti gambartwibbon.jpg dengan gambar bingkai Twibbon kalian -->
+                  <div id="img-preview">
+                    <div id="zoom"></div>
+                  </div>
+                  <img
+                    src="bg.png"
+                    id="gambarTwibbon"
+                    width="300"
+                    height="300"
+                  />
                 </div>
-                <img src="bg.png" id="gambarTwibbon" width="300" height="300" />
-              </div>
 
-              <!-- 2 Gambar akan digabungkan pada area canvas -->
-              <canvas id="canvas" style="position: absolute"></canvas>
+                <!-- 2 Gambar akan digabungkan pada area canvas -->
+                <canvas id="canvas"></canvas>
+                <div id="download-wp" style="display: none">
+                  <button
+                    onclick="downloadCanvas()"
+                    class="btn btn-sm btn-info mt-2 text-light"
+                  >
+                    Download
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -185,7 +207,7 @@
       }
 
       function getPositionXY(x) {
-        const element = document.getElementById("frame");
+        const element = document.getElementById("gambarKalian");
         var rect = element.getBoundingClientRect();
         if (x == "x") {
           return rect.x;
@@ -212,17 +234,38 @@
         canvas.height = height;
 
         context.drawImage(gambarKalian, 0, 0, width, height);
-        context.font = "20pt Calibri";
-        // context.lineWidth = 3;
-        // context.strokeStyle = "Red";
-        context.strokeText(name.value.toUpperCase(), 150, 270);
+        context.getImageData(0, 0, width, height);
+        context.drawImage(gambarTwibbon, 0, 0, width, height);
         context.getImageData(0, 0, width, height);
 
-        context.drawImage(gambarTwibbon, 0, 0, width, height);
-        context.font = "14px Calibri";
-        context.strokeText(country.value.toUpperCase(), 150, 290);
-        context.getImageData(0, 0, width, height);
+        context.font = "14px Arial";
+        // context.lineWidth = 3;
+        var gradient = context.createLinearGradient(0, 200, 0, 300);
+        gradient.addColorStop(0, "Yellow");
+        gradient.addColorStop(1, "Red");
+        context.fillStyle = gradient;
+        context.strokeStyle = "#FFFFFF";
+        context.strokeText(name.value.toUpperCase(), 10, 80);
+        context.font = "46px Arial";
+        // context.fillText(country.value.toUpperCase(), 10, 120);
+        context.strokeText(country.value.toUpperCase(), 10, 120);
         $("#frame").hide(0);
+        $("#download-wp").show();
+      }
+
+      function downloadCanvas() {
+        const canvas = document.getElementById("canvas");
+        var image = canvas.toDataURL();
+
+        // create temporary link
+        var tmpLink = document.createElement("a");
+        tmpLink.download = "image.png"; // set the name of the download file
+        tmpLink.href = image;
+
+        // temporarily add link to body and initiate the download
+        document.body.appendChild(tmpLink);
+        tmpLink.click();
+        document.body.removeChild(tmpLink);
       }
 
       //   drag
