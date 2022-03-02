@@ -18,6 +18,21 @@
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
       crossorigin="anonymous"
     ></script>
+
+    <!-- toaster -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"
+      integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"
+      integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <title>REOG ROAD TO ICH UNESCO</title>
 
     <style>
@@ -39,7 +54,7 @@
         cursor: move;
       }
       #img-preview {
-        border: 1px solid red;
+        border: none;
         width: 300px;
         height: 300px;
         overflow: hidden;
@@ -100,13 +115,25 @@
               <a href="#" onclick="twibbon()" class="btn btn-primary"
                 >Create Twibbon</a
               >
+              <a
+                href="#"
+                onclick="location.reload()"
+                id="clear"
+                class="btn btn-default"
+                >Clear</a
+              >
             </div>
           </div>
         </div>
         <div class="col-md-4">
           <div
             class="card"
-            style="margin-left: 10px; height: auto; position: absolute"
+            style="
+              margin-left: 10px;
+              height: auto;
+              position: absolute;
+              border: none;
+            "
           >
             <div class="card-body">
               <h5 class="card-title">Twibbon Reog</h5>
@@ -223,7 +250,10 @@
         // return;
 
         const gambarKalian = document.getElementById("gambarKalian");
-        console.log(gambarKalian);
+        if (gambarKalian == null) {
+          toastr.error("Upload your photo!");
+          return;
+        }
         const gambarTwibbon = document.getElementById("gambarTwibbon");
         gambarTwibbon.setAttribute("hidden", "true");
         const canvas = document.getElementById("canvas");
@@ -251,6 +281,7 @@
         context.strokeText(country.value.toUpperCase(), 10, 120);
         $("#frame").hide(0);
         $("#download-wp").show();
+        toastr.success("Twibbon created!");
       }
 
       function downloadCanvas() {
