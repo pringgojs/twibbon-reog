@@ -84,7 +84,7 @@
         background: url("bg.png") !important;
         background-size: 300px 300px !important;
         opacity: 1 !important;
-        z-index: 9999;
+        z-index: 8;
       }
 
       .cropper-crop-box {
@@ -95,6 +95,10 @@
       .cropper-container {
         /* width: 300px !important;
         height: 300px !important; */
+      }
+
+      .hidden {
+        display: none !important;
       }
     </style>
   </head>
@@ -142,16 +146,27 @@
                 <input class="form-control" type="file" id="choose-file" />
               </div>
               <p class="card-text"></p>
-              <button onclick="imageCrop(1)" class="btn btn-primary">
-                Create Twibbon
-              </button>
-              <a
-                href="#"
-                onclick="location.reload()"
-                id="clear"
-                class="btn btn-default"
-                >Clear</a
-              >
+
+              <div class="d-flex align-items-center hidden" id="loader">
+                <strong>Loading...</strong>
+                <div
+                  class="spinner-border ms-auto"
+                  role="status"
+                  aria-hidden="true"
+                ></div>
+              </div>
+
+              <div id="wp-btn-create" class="d-grid gap-2">
+                <button onclick="imageCrop(1)" class="btn btn-primary">
+                  Create Twibbon
+                </button>
+              </div>
+
+              <div id="wp-btn-reload" class="d-grid gap-2 hidden">
+                <button onclick="location.reload()" class="btn btn-warning">
+                  Create New
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -277,6 +292,9 @@
       }
 
       async function imageCrop(i) {
+        $("#wp-btn-create").addClass("hidden");
+        $("#loader").removeClass("hidden");
+
         console.log("going");
         canvas = cropper.getCroppedCanvas({
           width: 400,
@@ -354,8 +372,16 @@
           $("#frame").hide(0);
           $("#canvas").show(0);
           $("#download-wp").show();
+          $("#loader").addClass("hidden");
+          $("#wp-btn-reload").removeClass("hidden");
           toastr.success("Twibbon created!");
+          resetForm();
         }
+      }
+
+      function resetForm() {
+        $("#name").prop("readonly", true);
+        $("#country").prop("readonly", true);
       }
 
       function downloadCanvas() {
