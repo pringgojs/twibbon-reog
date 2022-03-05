@@ -33,6 +33,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+
+    <link href="js/cropper/cropper.min.css" rel="stylesheet" />
+
     <title>REOG ROAD TO ICH UNESCO</title>
 
     <style>
@@ -74,6 +77,24 @@
         /* position: fixed; */
         /* top: 0; */
         /* left: 0; */
+      }
+
+      /** cropper **/
+      .cropper-modal {
+        background: url("bg.png") !important;
+        background-size: 300px 300px !important;
+        opacity: 1 !important;
+        z-index: 9999;
+      }
+
+      .cropper-crop-box {
+        width: 300px !important;
+        height: 300px !important;
+      }
+
+      .cropper-container {
+        /* width: 300px !important;
+        height: 300px !important; */
       }
     </style>
   </head>
@@ -121,9 +142,9 @@
                 <input class="form-control" type="file" id="choose-file" />
               </div>
               <p class="card-text"></p>
-              <a href="#" onclick="twibbon()" class="btn btn-primary"
-                >Create Twibbon</a
-              >
+              <button id="btn-twibbon" class="btn btn-primary">
+                Create Twibbon
+              </button>
               <a
                 href="#"
                 onclick="location.reload()"
@@ -194,6 +215,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
     -->
 
+    <!-- <script src="node_modules/cropper/dist/cropper.min.js"></script> -->
+    <script src="js/cropper.js"></script>
     <script type="text/javascript">
       const chooseFile = document.getElementById("choose-file");
       chooseFile.addEventListener("change", function () {
@@ -201,19 +224,19 @@
       });
 
       //   zoom
-      const zoomElement = document.getElementById("zoom");
-      let zoom = 1;
-      const ZOOM_SPEED = 0.1;
-      const frame = document.getElementById("frame");
+      // const zoomElement = document.getElementById("zoom");
+      // let zoom = 1;
+      // const ZOOM_SPEED = 0.1;
+      // const frame = document.getElementById("frame");
+      // frame.addEventListener("wheel", function (e) {
+      //   if (e.deltaY > 0) {
+      //     zoomElement.style.transform = `scale(${(zoom += ZOOM_SPEED)})`;
+      //   } else {
+      //     zoomElement.style.transform = `scale(${(zoom -= ZOOM_SPEED)})`;
+      //   }
+      // });
 
-      frame.addEventListener("wheel", function (e) {
-        if (e.deltaY > 0) {
-          zoomElement.style.transform = `scale(${(zoom += ZOOM_SPEED)})`;
-        } else {
-          zoomElement.style.transform = `scale(${(zoom -= ZOOM_SPEED)})`;
-        }
-      });
-
+      // end zoom
       function getImgData() {
         const files = chooseFile.files[0];
         const imgPreview = document.getElementById("zoom");
@@ -223,12 +246,61 @@
           fileReader.addEventListener("load", function () {
             imgPreview.style.display = "hidden";
             imgPreview.innerHTML =
-              '<img id="gambarKalian" width="300" height="300" src="' +
+              '<img id="gambarKalian" width="300px" height="300px" src="' +
               this.result +
               '" />';
 
-            dragElement(document.getElementById("gambarKalian"));
+            // window.addEventListener("DOMContentLoaded", function () {
+            var image = document.querySelector("#gambarKalian");
+            var $btnTwibbon = $("#btn-twibbon");
+            var cropper = new Cropper(image, {
+              viewMode: 3,
+              dragMode: "move",
+              aspectRatio: 1 / 1,
+              autoCropArea: 1,
+              restore: false,
+              guides: false,
+              center: true,
+              highlight: false,
+              cropBoxMovable: true,
+              cropBoxResizable: false,
+              toggleDragModeOnDblclick: false,
+              minContainerWidth: 300,
+              minContainerHeight: 300,
+              built: function () {
+                image.cropper("setCropBoxData", {
+                  width: 300,
+                  height: 300,
+                });
+
+                $btnTwibbon.on("click", function () {
+                  var data = image.cropper("getData");
+                  console.log(data);
+                  alert("yoo");
+
+                  // Send the data to server-side and crop the image there
+                  // ...
+                });
+              },
+            });
+            $("#gambarTwibbon").hide();
+            // });
+            // dragElement(document.getElementById("gambarKalian"));
           });
+
+          // var image = document.querySelector("#gambarKalian");
+          // var cropper = new Cropper(image, {
+          //   dragMode: "move",
+          //   aspectRatio: 16 / 9,
+          //   autoCropArea: 0.65,
+          //   restore: false,
+          //   guides: false,
+          //   center: false,
+          //   highlight: false,
+          //   cropBoxMovable: false,
+          //   cropBoxResizable: false,
+          //   toggleDragModeOnDblclick: false,
+          // });
         }
       }
 
@@ -299,7 +371,6 @@
       }
 
       //   drag
-
       function dragElement(elmnt) {
         var pos1 = 0,
           pos2 = 0,
