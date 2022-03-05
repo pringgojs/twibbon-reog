@@ -142,7 +142,7 @@
                 <input class="form-control" type="file" id="choose-file" />
               </div>
               <p class="card-text"></p>
-              <button id="btn-twibbon" class="btn btn-primary">
+              <button onclick="imageCrop(1)" class="btn btn-primary">
                 Create Twibbon
               </button>
               <a
@@ -183,7 +183,7 @@
                 </div>
 
                 <!-- 2 Gambar akan digabungkan pada area canvas -->
-                <canvas id="canvas"></canvas>
+                <canvas id="canvas" style="display: none"></canvas>
                 <div id="download-wp" style="display: none">
                   <button
                     onclick="downloadCanvas()"
@@ -218,25 +218,13 @@
     <!-- <script src="node_modules/cropper/dist/cropper.min.js"></script> -->
     <script src="js/cropper.js"></script>
     <script type="text/javascript">
+      var cropper;
+      var base64Image;
       const chooseFile = document.getElementById("choose-file");
       chooseFile.addEventListener("change", function () {
         getImgData();
       });
 
-      //   zoom
-      // const zoomElement = document.getElementById("zoom");
-      // let zoom = 1;
-      // const ZOOM_SPEED = 0.1;
-      // const frame = document.getElementById("frame");
-      // frame.addEventListener("wheel", function (e) {
-      //   if (e.deltaY > 0) {
-      //     zoomElement.style.transform = `scale(${(zoom += ZOOM_SPEED)})`;
-      //   } else {
-      //     zoomElement.style.transform = `scale(${(zoom -= ZOOM_SPEED)})`;
-      //   }
-      // });
-
-      // end zoom
       function getImgData() {
         const files = chooseFile.files[0];
         const imgPreview = document.getElementById("zoom");
@@ -250,10 +238,9 @@
               this.result +
               '" />';
 
-            // window.addEventListener("DOMContentLoaded", function () {
             var image = document.querySelector("#gambarKalian");
-            var $btnTwibbon = $("#btn-twibbon");
-            var cropper = new Cropper(image, {
+
+            cropper = new Cropper(image, {
               viewMode: 3,
               dragMode: "move",
               aspectRatio: 1 / 1,
@@ -272,35 +259,10 @@
                   width: 300,
                   height: 300,
                 });
-
-                $btnTwibbon.on("click", function () {
-                  var data = image.cropper("getData");
-                  console.log(data);
-                  alert("yoo");
-
-                  // Send the data to server-side and crop the image there
-                  // ...
-                });
               },
             });
             $("#gambarTwibbon").hide();
-            // });
-            // dragElement(document.getElementById("gambarKalian"));
           });
-
-          // var image = document.querySelector("#gambarKalian");
-          // var cropper = new Cropper(image, {
-          //   dragMode: "move",
-          //   aspectRatio: 16 / 9,
-          //   autoCropArea: 0.65,
-          //   restore: false,
-          //   guides: false,
-          //   center: false,
-          //   highlight: false,
-          //   cropBoxMovable: false,
-          //   cropBoxResizable: false,
-          //   toggleDragModeOnDblclick: false,
-          // });
         }
       }
 
@@ -314,18 +276,47 @@
         return rect.y;
       }
 
-      function twibbon() {
+      async function imageCrop(i) {
+        console.log("going");
+        canvas = cropper.getCroppedCanvas({
+          width: 400,
+          height: 400,
+        });
+
+        canvas.toBlob(function (blob) {
+          url = URL.createObjectURL(blob);
+          var reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = function () {
+            twibbon(reader.result, i);
+          };
+        });
+      }
+
+      function twibbon(imgBase64, i) {
         const name = document.getElementById("name");
         const country = document.getElementById("country");
-
+        // console.log(imgBase64);
         // return;
 
+        $("#gambarKalian").attr("src", imgBase64);
         const gambarKalian = document.getElementById("gambarKalian");
+        console.log(gambarKalian);
+
+        // $("#gambarKalian2").attr("src", imgBase64);
+        // const gambarKalian = document.getElementById("gambarKalian2");
+
         if (gambarKalian == null) {
           toastr.error("Upload your photo!");
           return;
         }
         const gambarTwibbon = document.getElementById("gambarTwibbon");
+        console.log(gambarTwibbon);
+
+        // twb();
+
+        // return;
+
         gambarTwibbon.setAttribute("hidden", "true");
         const canvas = document.getElementById("canvas");
         const context = canvas.getContext("2d");
@@ -340,7 +331,6 @@
         context.getImageData(0, 0, width, height);
 
         context.font = "14px Arial";
-        // context.lineWidth = 3;
         var gradient = context.createLinearGradient(0, 200, 0, 300);
         gradient.addColorStop(0, "Yellow");
         gradient.addColorStop(1, "Red");
@@ -350,9 +340,22 @@
         context.font = "46px Arial";
         // context.fillText(country.value.toUpperCase(), 10, 120);
         context.strokeText(country.value.toUpperCase(), 10, 120);
-        $("#frame").hide(0);
-        $("#download-wp").show();
-        toastr.success("Twibbon created!");
+
+        if (i == 1) {
+          var delayInMilliseconds = 3000; //3 second
+
+          setTimeout(function () {
+            twibbon(imgBase64, 2);
+            //your code to be executed after 1 second
+          }, delayInMilliseconds);
+        }
+
+        if (i == 2) {
+          $("#frame").hide(0);
+          $("#canvas").show(0);
+          $("#download-wp").show();
+          toastr.success("Twibbon created!");
+        }
       }
 
       function downloadCanvas() {
@@ -370,56 +373,20 @@
         document.body.removeChild(tmpLink);
       }
 
-      //   drag
-      function dragElement(elmnt) {
-        var pos1 = 0,
-          pos2 = 0,
-          pos3 = 0,
-          pos4 = 0;
+      function twb() {
+        const gambarKalian = document.getElementById("gambarKalian2");
+        const gambarTwibbon = document.getElementById("gambarTwibbon");
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext("2d");
+        const width = gambarTwibbon.width;
+        const height = gambarTwibbon.height;
+        canvas.width = width;
+        canvas.height = height;
 
-        // console.log(elmnt);
-        if (document.getElementById("gambarTwibbon")) {
-          /* if present, the header is where you move the DIV from:*/
-          document.getElementById("gambarTwibbon").onmousedown = dragMouseDown;
-        } else {
-          /* otherwise, move the DIV from anywhere inside the DIV:*/
-          elmnt.onmousedown = dragMouseDown;
-        }
-
-        elmnt.onmousedown = dragMouseDown;
-
-        function dragMouseDown(e) {
-          e = e || window.event;
-          e.preventDefault();
-          // get the mouse cursor position at startup:
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          document.onmouseup = closeDragElement;
-          // call a function whenever the cursor moves:
-          document.onmousemove = elementDrag;
-        }
-
-        function elementDrag(e) {
-          e = e || window.event;
-          e.preventDefault();
-          // calculate the new cursor position:
-          pos1 = pos3 - e.clientX;
-          pos2 = pos4 - e.clientY;
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          // set the element's new position:
-          elmnt.style.top = elmnt.offsetTop - pos2 + "px";
-          elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
-
-          console.log("x" + getPositionXY("x"));
-          console.log("y" + getPositionXY("y"));
-        }
-
-        function closeDragElement() {
-          /* stop moving when mouse button is released:*/
-          document.onmouseup = null;
-          document.onmousemove = null;
-        }
+        context.drawImage(gambarKalian, 0, 1, width, height);
+        context.getImageData(0, 0, width, height);
+        context.drawImage(gambarTwibbon, 0, 0, width, height);
+        context.getImageData(0, 0, width, height);
       }
     </script>
   </body>
